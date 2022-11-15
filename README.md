@@ -8,6 +8,11 @@ This is a project of "Neurotechnology and Affective Computing" course for the th
 
 In order to run the code you need to request the [Seed Dataset](https://bcmi.sjtu.edu.cn/home/seed/seed.html), you need to apply for it, download the dataset and copy the SEED folder of the dataset to the root directory.  
 
+```shell
+cd EmotionClassifierModel
+python Models.py
+```
+
 ## Project Objectives
 
 In this project we will use EEG signals for emotion recognition. Through different kinds of classifiers, analyze their accuracy and performance and draw conclusions.  
@@ -17,6 +22,12 @@ After that, We will use the trained model to build the application.
 
 EEG Equipment: Open BCI 16 channels  
 Datasets: Seed
+
+## Library Required
+
+1.[NumPy](https://numpy.org/)  
+2.[SciPy](https://scipy.org/)  
+3.[scikit-learn](https://scikit-learn.org/stable/)
 
 ## Participants
 

@@ -385,9 +385,9 @@ class EmotionClassifier:
 
 
 if __name__ == "__main__":
-    EC = EmotionClassifier("./Datasets/SEED/Preprocessed_EEG/", "./TrainingData/")
+    EC = EmotionClassifier()
     EC.Init_train_test_data()
 
-    EC.SVM_model(find_params=False)
-    EC.AdaBoost_model(find_params=False)
-    EC.MLP_model(find_params=False)
+    EC.SVM_model()
+    EC.AdaBoost_model()
+    EC.MLP_model()
