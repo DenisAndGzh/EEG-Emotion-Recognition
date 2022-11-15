@@ -43,7 +43,7 @@ class EmotionClassifier:
     X_train, X_test, y_train, y_test = [], [], [], []
     y_pred = []
     SVM_params = {"C": 0.1, "kernel": "linear"}
-    AdaBoost_params = {"n_estimators": 500, "learning_rate": 1}
+    AdaBoost_params = {"n_estimators": 2000, "learning_rate": 0.01}
 
     MLP_params = {
         "activation": "tanh",
@@ -231,8 +231,8 @@ class EmotionClassifier:
             "kernel": ["linear", "poly", "rbf", "sigmoid"],
         }
         AdaBoost_gsearch_params = {
-            "n_estimators": [600, 700, 800],
-            "learning_rate": [1.0],
+            "n_estimators": [2000, 2500],
+            "learning_rate": [0.01, 0.05, 0.1],
         }
         MLP_gsearch_params = {
             "max_iter": [1200, 1400, 1600],
