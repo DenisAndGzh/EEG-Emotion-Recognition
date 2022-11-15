@@ -191,9 +191,9 @@ class EmotionClassifier:
             If true, do find best parameters for SVM model
         """
         if find_params:
-            self.SVM_model_find_best_params()
-        self.SVM_model_train()
-        self.SVM_model_summary()
+            self.model_find_best_params("SVM")
+        self.model_train("SVM")
+        self.model_summary("SVM")
 
     def AdaBoost_model(self, find_params=False):
         """Set and train AdaBoost model, and output the summary.
@@ -203,9 +203,9 @@ class EmotionClassifier:
             If true, do find best parameters for AdaBoost model
         """
         if find_params:
-            self.AdaBoost_model_find_best_params()
-        self.AdaBoost_model_train()
-        self.AdaBoost_model_summary()
+            self.model_find_best_params("AdaBoost")
+        self.model_train("AdaBoost")
+        self.model_summary("AdaBoost")
 
     def MLP_model(self, find_params=False):
         """Set and train MLP model, and output the summary.
@@ -215,124 +215,26 @@ class EmotionClassifier:
             If true, do find best parameters for MLP model
         """
         if find_params:
-            self.MLP_model_find_best_params()
-        self.MLP_model_train()
-        self.MLP_model_summary()
+            self.model_find_best_params("MLP")
+        self.model_train("MLP")
+        self.model_summary("MLP")
 
-    def SVM_model_find_best_params(self):
+    def model_find_best_params(self, model):
         """Find the best parameters for an SVM model
 
         Note:
-            Class variable set default value C=0.1, kernel = "linear"
+            Class variable set default params
         """
         print("/**********//* Finding best model params *//**********/")
-        params = {
+        SVM_gsearch_params = {
             "C": np.arange(0.1, 1, 0.1),
             "kernel": ["linear", "poly", "rbf", "sigmoid"],
         }
-        gsearch = GridSearchCV(
-            SVC(kernel="linear"),
-            params,
-            scoring="accuracy",
-            cv=5,
-            n_jobs=-1,
-            verbose=10,
-        )
-        gsearch.fit(self.X_train, self.y_train)
-        self.SVM_params["C"] = gsearch.best_params_["C"]
-        self.SVM_params["kernel"] = gsearch.best_params_["kernel"]
-        print("Best SVM Params is: " + str(gsearch.best_params_))
-        print("SVM Score: %.3f" % gsearch.best_score_)
-
-    def SVM_model_train(self):
-        """Train the SVM model
-
-        Note:
-            If the optimal parameters of the SVM model are not calculated,
-            the default values SVM_params are used.
-        """
-        print("/*************//* Trainning SVM model *//*************/")
-        svclassifier = SVC(**self.SVM_params)
-        svclassifier.fit(self.X_train, self.y_train)
-        self.y_pred = svclassifier.predict(self.X_test)
-
-    def SVM_model_summary(self):
-        """Summary of the output model
-
-        Note:
-            Contains confusion matrix and classification report.
-        """
-        print("                      SVM Model")
-        print(confusion_matrix(self.y_test, self.y_pred))
-        print(
-            classification_report(
-                self.y_test,
-                self.y_pred,
-                target_names=["negative", "neutral", "positive"],
-            )
-        )
-
-    def AdaBoost_model_find_best_params(self):
-        """Find the best parameters for an AdaBoost model
-
-        Note:
-            Class variable set default AdaBoost_params"
-        """
-        print("/**********//* Finding best model params *//**********/")
-        params = {
-            "n_estimators": [500, 600, 700],
+        AdaBoost_gsearch_params = {
+            "n_estimators": [600, 700, 800],
             "learning_rate": [1.0],
         }
-        gsearch = GridSearchCV(
-            AdaBoostClassifier(),
-            params,
-            scoring="accuracy",
-            cv=5,
-            n_jobs=-1,
-            verbose=10,
-        )
-        gsearch.fit(self.X_train, self.y_train)
-        self.AdaBoost_params["n_estimators"] = gsearch.best_params_["n_estimators"]
-        self.AdaBoost_params["learning_rate"] = gsearch.best_params_["learning_rate"]
-        print("Best AdaBoost Params is: " + str(gsearch.best_params_))
-        print("AdaBoost Score: %.3f" % gsearch.best_score_)
-
-    def AdaBoost_model_train(self):
-        """Train the AdaBoost model
-
-        Note:
-            If the optimal parameters of the AdaBoost model are not calculated,
-            the default values AdaBoost_params are used.
-        """
-        print("/*************//* Trainning Ada model *//*************/")
-        abc = AdaBoostClassifier(**self.AdaBoost_params)
-        abc.fit(self.X_train, self.y_train)
-        self.y_pred = abc.predict(self.X_test)
-
-    def AdaBoost_model_summary(self):
-        """Summary of the output model
-
-        Note:
-            Contains confusion matrix and classification report.
-        """
-        print("                      AdaBoost Model:")
-        print(confusion_matrix(self.y_test, self.y_pred))
-        print(
-            classification_report(
-                self.y_test,
-                self.y_pred,
-                target_names=["negative", "neutral", "positive"],
-            )
-        )
-
-    def MLP_model_find_best_params(self):
-        """Find the best parameters for an MLP model
-
-        Note:
-            Class variable set default MLP_params"
-        """
-        print("/**********//* Finding best model params *//**********/")
-        params = {
+        MLP_gsearch_params = {
             "max_iter": [1200, 1400, 1600],
             "alpha": [0.0001, 0.05, 0.1],
             "learning_rate": ["constant", "adaptive"],
@@ -340,40 +242,62 @@ class EmotionClassifier:
             "solver": ["sgd", "adam"],
             "hidden_layer_sizes": [(500, 1), (500, 2), (500, 3)],
         }
+
+        match model:
+            case "SVM":
+                estimator = SVC()
+                params = SVM_gsearch_params
+            case "AdaBoost":
+                estimator = AdaBoostClassifier()
+                params = AdaBoost_gsearch_params
+            case "MLP":
+                estimator = MLPClassifier()
+                params = MLP_gsearch_params
+
         gsearch = GridSearchCV(
-            MLPClassifier(), params, scoring="accuracy", cv=5, n_jobs=-1, verbose=10
+            estimator,
+            params,
+            scoring="accuracy",
+            cv=5,
+            n_jobs=-1,
+            verbose=10,
         )
         gsearch.fit(self.X_train, self.y_train)
-        self.MLP_params["max_iter"] = gsearch.best_params_["max_iter"]
-        self.MLP_params["alpha"] = gsearch.best_params_["alpha"]
-        self.MLP_params["learning_rate"] = gsearch.best_params_["learning_rate"]
-        self.MLP_params["activation"] = gsearch.best_params_["activation"]
-        self.MLP_params["solver"] = gsearch.best_params_["solver"]
-        self.MLP_params["hidden_layer_sizes"] = gsearch.best_params_[
-            "hidden_layer_sizes"
-        ]
-        print("Best MLP Params is: " + str(gsearch.best_params_))
-        print("MLP Score: %.3f" % gsearch.best_score_)
+        match model:
+            case "SVM":
+                self.SVM_params = gsearch.best_params_
+            case "AdaBoost":
+                self.AdaBoost_params = gsearch.best_params_
+            case "MLP":
+                self.MLP_params = gsearch.best_params_
+        print("Best " + model + " Params is: " + str(gsearch.best_params_))
+        print(model + " Score: %.3f" % gsearch.best_score_)
 
-    def MLP_model_train(self):
-        """Train the MLP model
+    def model_train(self, model):
+        """Train the model
 
         Note:
-            If the optimal parameters of the MLP model are not calculated,
-            the default MLP_params are used.
+            If the optimal parameters of the model are not calculated,
+            the default params are used.
         """
-        print("/*************//* Trainning MLP model *//*************/")
-        mlp = MLPClassifier(**self.MLP_params)
-        mlp.fit(self.X_train, self.y_train)
-        self.y_pred = mlp.predict(self.X_test)
+        print("/*************//* Trainning " + model + " model *//*************/")
+        match model:
+            case "SVM":
+                classifier = SVC(**self.SVM_params)
+            case "AdaBoost":
+                classifier = AdaBoostClassifier(**self.AdaBoost_params)
+            case "MLP":
+                classifier = MLPClassifier(**self.MLP_params)
+        classifier.fit(self.X_train, self.y_train)
+        self.y_pred = classifier.predict(self.X_test)
 
-    def MLP_model_summary(self):
+    def model_summary(self, model):
         """Summary of the output model
 
         Note:
             Contains confusion matrix and classification report.
         """
-        print("                      MLP Model:")
+        print("                      " + model + " Model:")
         print(confusion_matrix(self.y_test, self.y_pred))
         print(
             classification_report(
