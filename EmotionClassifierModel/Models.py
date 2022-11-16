@@ -63,7 +63,7 @@ class EmotionClassifier:
     }
 
     def __init__(
-        self, data_dir="../SEED/Preprocessed_EEG/", feature_data_dir="../TrainingData/", flag=False, usr_data_path=[]
+        self,  flag=False, data_dir="../SEED/Preprocessed_EEG/", feature_data_dir="../TrainingData/", usr_data_path="../TestData/BrainFlow-RAW.csv"
     ):
         """Inits EmotionClassifier Class
 
@@ -71,10 +71,7 @@ class EmotionClassifier:
             data_dir (str): The path of SEED dataset directory.
             feature_data_dir (str): The path of featured data directory.
         """
-        if flag and len(usr_data_path) == 0:
-            raise ValueError("Need path of user data!")
-        else:
-            self.usr_data_path = usr_data_path
+        self.usr_data_path = usr_data_path
         if not EmotionClassifier.__data_exist(feature_data_dir):
             print("/*********//* Feature data does not exit *//**********/")
             print("/****************//* creating data *//****************/")
@@ -348,9 +345,7 @@ class EmotionClassifier:
 
 
 if __name__ == "__main__":
-    EC = EmotionClassifier(
-        flag=True, usr_data_path="../TestData/BrainFlow-RAW.csv")
-    print()
+    EC = EmotionClassifier(True)
     EC.Init_train_test_data()
 
     EC.SVM_model()
