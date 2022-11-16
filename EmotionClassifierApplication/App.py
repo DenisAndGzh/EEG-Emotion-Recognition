@@ -59,10 +59,10 @@ cbox.current(0)
 cbox.grid(row=1, sticky="NW")
 
 tk.Label(window, textvariable=f, font=("微软雅黑", 13)).place(anchor="center", x=325, y=330)
-tk.Button(window, text="Upload and predict", width=15, height=3, command=upload).place(
+tk.Button(window, text="Upload", width=10, height=2, command=upload).place(
     anchor="center", x=163, y=385
 )
-tk.Button(window, text="Upload and predict", width=15, height=3, command=predict).place(
+tk.Button(window, text="Predict", width=10, height=2, command=predict).place(
     anchor="center", x=487, y=385
 )
 
