@@ -3,6 +3,8 @@
 ## Introduction
 
 This is a project of "Neurotechnology and Affective Computing" course for the third year in university.  
+Project Report: [Comparison of Effectiveness of Several Classifiers in EEG
+Emotion Recognition](https://denisandgzh.github.io/EEG-Emotion-Recognition/)  
 
 ## Setup And Run
 
