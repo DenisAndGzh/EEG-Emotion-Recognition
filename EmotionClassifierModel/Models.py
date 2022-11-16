@@ -23,7 +23,7 @@ band_dict = {
     "gamma": [31, 50],
 }
 
-# channels = [0, 2, 25, 29, 41, 49, 58, 60, 5, 13, 7, 11, 23, 31, 43, 47]
+# F7, F8, T7, T8
 channels = [5, 13, 23, 31]
 
 
@@ -31,8 +31,8 @@ class EmotionClassifier:
     """This is a class for emotion recognition classifier
 
     This class contains the reading of the dataset seed,
-    the feature extraction of the data, the training and testing of the SVM model,
-    and finding the optimal parameters of the SVM model
+    the feature extraction of the data, the training and testing of the several model,
+    and finding the optimal parameters of the several model
 
     Attributes:
         data_dir: The path of SEED dataset directory.
@@ -57,11 +57,11 @@ class EmotionClassifier:
     def __init__(
         self, data_dir="../SEED/Preprocessed_EEG/", feature_data_dir="../TrainingData/"
     ):
-        """Inits SVMEmotionRecognition Class
+        """Inits EmotionClassifier Class
 
         Args:
             data_dir (str): The path of SEED dataset directory.
-            feature_data_dir (str): The path of feature data directory.
+            feature_data_dir (str): The path of featured data directory.
         """
         if not self.__data_exist(feature_data_dir):
             print("/*********//* Feature data does not exit *//**********/")
@@ -78,7 +78,7 @@ class EmotionClassifier:
 
         Args:
             data_dir (str): The path of SEED dataset directory.
-            feature_data_dir (str): The path of feature data directory.
+            feature_data_dir (str): The path of featured data directory.
         """
         label_Y = loadmat(data_dir + "label.mat")["label"][0]
         file_count = 0
@@ -134,7 +134,7 @@ class EmotionClassifier:
         """IO functions to read or write feature data
 
         Args:
-            feature_data_dir (str): The path of feature data directory.
+            feature_data_dir (str): The path of featured data directory.
             method (str): read -- "rb" or write -- "wb"
         """
         with open(feature_data_dir + "datasets_X.pickle", method) as fx:

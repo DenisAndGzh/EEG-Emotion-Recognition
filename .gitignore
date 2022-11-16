@@ -5,6 +5,7 @@ __pycache__/
 
 # User
 Datasets
+SEED
 
 # C extensions
 *.so
