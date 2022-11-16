@@ -88,7 +88,7 @@ class EmotionClassifier:
             file_data = loadmat(data_dir + file_name)
             file_count += 1
             print(
-                "当前已处理到{}，总进度{}/{}".format(
+                "Currently processed to: {}，total progress: {}/{}".format(
                     file_name, file_count, len(os.listdir(data_dir)) - 2
                 )
             )
@@ -103,7 +103,7 @@ class EmotionClassifier:
                     for channel in range(len(channels)):
                         filtedData_split = []
                         for de_index in range(0, filtedData.shape[1] - fs, fs):
-                            # 计算 DE
+                            # Calculate DE
                             filtedData_split.append(
                                 math.log(
                                     2
@@ -116,7 +116,6 @@ class EmotionClassifier:
                                 )
                                 / 2
                             )
-                        # 这里将每个样本大小进行统一，如果想通过滑动窗口截取样本可在这一行下面自行修改
                         filtedData_split = filtedData_split[-100:]
                         filtedData_de.append(filtedData_split)
                     filtedData_de = np.array(filtedData_de)
@@ -203,9 +202,9 @@ class EmotionClassifier:
             If true, do find best parameters for AdaBoost model
         """
         if find_params:
-            self.model_find_best_params("AdaBoost")
-        self.model_train("AdaBoost")
-        self.model_summary("AdaBoost")
+            self.model_find_best_params("Ada")
+        self.model_train("Ada")
+        self.model_summary("Ada")
 
     def MLP_model(self, find_params=False):
         """Set and train MLP model, and output the summary.
@@ -247,7 +246,7 @@ class EmotionClassifier:
             case "SVM":
                 estimator = SVC()
                 params = SVM_gsearch_params
-            case "AdaBoost":
+            case "Ada":
                 estimator = AdaBoostClassifier()
                 params = AdaBoost_gsearch_params
             case "MLP":
@@ -266,7 +265,7 @@ class EmotionClassifier:
         match model:
             case "SVM":
                 self.SVM_params = gsearch.best_params_
-            case "AdaBoost":
+            case "Ada":
                 self.AdaBoost_params = gsearch.best_params_
             case "MLP":
                 self.MLP_params = gsearch.best_params_
@@ -284,7 +283,7 @@ class EmotionClassifier:
         match model:
             case "SVM":
                 classifier = SVC(**self.SVM_params)
-            case "AdaBoost":
+            case "Ada":
                 classifier = AdaBoostClassifier(**self.AdaBoost_params)
             case "MLP":
                 classifier = MLPClassifier(**self.MLP_params)
