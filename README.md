@@ -15,6 +15,13 @@ cd EmotionClassifierModel
 python Models.py
 ```
 
+To run Application
+
+```shell
+cd EmotionClassifierApplication
+python App.py
+```
+
 ## Project Objectives
 
 In this project we will use EEG signals for emotion recognition. Through different kinds of classifiers, analyze their accuracy and performance and draw conclusions.  

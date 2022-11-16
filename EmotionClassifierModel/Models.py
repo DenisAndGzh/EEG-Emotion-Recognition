@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import math
 import os
 import pickle
@@ -29,7 +30,7 @@ emotion_lable_dict = {
     1: "positive"
 }
 
-# F7, F8, T7, T8
+# F7, F8, T7, T8 in SEED data set
 channels = [5, 13, 23, 31]
 
 
@@ -341,7 +342,7 @@ class EmotionClassifier:
         return [EmotionClassifier.process_data(data, fs, channels)]
 
     def get_predicted_value(self):
-        return self.y_pred
+        return self.y_pred[0]
 
 
 if __name__ == "__main__":
