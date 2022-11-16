@@ -23,6 +23,12 @@ band_dict = {
     "gamma": [31, 50],
 }
 
+emotion_lable_dict = {
+    -1: "negative",
+    0: "neutral",
+    1: "positive"
+}
+
 # F7, F8, T7, T8
 channels = [5, 13, 23, 31]
 
@@ -44,6 +50,8 @@ class EmotionClassifier:
     y_pred = []
     SVM_params = {"C": 0.1, "kernel": "linear"}
     AdaBoost_params = {"n_estimators": 2000, "learning_rate": 0.01}
+    flag = False
+    usr_data_path = []
 
     MLP_params = {
         "activation": "tanh",
@@ -55,7 +63,7 @@ class EmotionClassifier:
     }
 
     def __init__(
-        self, data_dir="../SEED/Preprocessed_EEG/", feature_data_dir="../TrainingData/"
+        self, data_dir="../SEED/Preprocessed_EEG/", feature_data_dir="../TrainingData/", flag=False, usr_data_path=[]
     ):
         """Inits EmotionClassifier Class
 
@@ -63,7 +71,11 @@ class EmotionClassifier:
             data_dir (str): The path of SEED dataset directory.
             feature_data_dir (str): The path of featured data directory.
         """
-        if not self.__data_exist(feature_data_dir):
+        if flag and len(usr_data_path) == 0:
+            raise ValueError("Need path of user data!")
+        else:
+            self.usr_data_path = usr_data_path
+        if not EmotionClassifier.__data_exist(feature_data_dir):
             print("/*********//* Feature data does not exit *//**********/")
             print("/****************//* creating data *//****************/")
             self.feature_extraction(data_dir, feature_data_dir)
@@ -71,6 +83,7 @@ class EmotionClassifier:
             print("/*************//* Feature data exist *//**************/")
             print("/****************//* reading data *//*****************/")
             self.__feature_data_io(feature_data_dir, "rb")
+        self.flag = flag
 
     def feature_extraction(self, data_dir, feature_data_dir):
         """Read the data, perform bandpass filtering on the data,
@@ -94,41 +107,44 @@ class EmotionClassifier:
             )
             label_data = list(file_data.keys())[3:]
             for index, lable in enumerate(label_data):
-                dataset_X = []
                 data = file_data[lable][channels]
-                for band in band_dict.values():
-                    b, a = signal.butter(4, [band[0] / fs, band[1] / fs], "bandpass")
-                    filtedData = signal.filtfilt(b, a, data)
-                    filtedData_de = []
-                    for channel in range(len(channels)):
-                        filtedData_split = []
-                        for de_index in range(0, filtedData.shape[1] - fs, fs):
-                            # Calculate DE
-                            filtedData_split.append(
-                                math.log(
-                                    2
-                                    * math.pi
-                                    * math.e
-                                    * np.var(
-                                        filtedData[channel, de_index : de_index + fs],
-                                        ddof=1,
-                                    )
-                                )
-                                / 2
-                            )
-                        filtedData_split = filtedData_split[-100:]
-                        filtedData_de.append(filtedData_split)
-                    filtedData_de = np.array(filtedData_de)
-                    dataset_X.append(filtedData_de)
-                dataset_X = np.array(dataset_X).reshape(
-                    (len(channels) * 100 * 5)
-                )  # channels_num * 100 *5
-                self.datasets_X.append(dataset_X)
+                self.datasets_X.append(self.process_data(data, fs, channels))
                 self.datasets_y.append(label_Y[index])
 
         self.datasets_X = np.array(self.datasets_X)
         self.datasets_y = self.datasets_y
         self.__feature_data_io(feature_data_dir, "wb")
+
+    def process_data(data, fs, channels):
+        dataset_X = []
+        for band in band_dict.values():
+            b, a = signal.butter(4, [band[0] / fs, band[1] / fs], "bandpass")
+            filtedData = signal.filtfilt(b, a, data)
+            filtedData_de = []
+            for channel in range(len(channels)):
+                filtedData_split = []
+                for de_index in range(0, filtedData.shape[1] - fs, fs):
+                    # Calculate DE
+                    filtedData_split.append(
+                        math.log(
+                            2
+                            * math.pi
+                            * math.e
+                            * np.var(
+                                filtedData[channel, de_index: de_index + fs],
+                                ddof=1,
+                            )
+                        )
+                        / 2
+                    )
+                filtedData_split = filtedData_split[-100:]
+                filtedData_de.append(filtedData_split)
+            filtedData_de = np.array(filtedData_de)
+            dataset_X.append(filtedData_de)
+        dataset_X = np.array(dataset_X).reshape(
+            (len(channels) * 100 * 5)
+        )  # channels_num * 100 *5
+        return dataset_X
 
     def __feature_data_io(self, feature_data_dir, method):
         """IO functions to read or write feature data
@@ -148,7 +164,7 @@ class EmotionClassifier:
             else:
                 pickle.dump(self.datasets_y, fy)
 
-    def __data_exist(self, path):
+    def __data_exist(path):
         """Determine if the folder where the path is located exists or is empty
 
         Note:
@@ -178,9 +194,13 @@ class EmotionClassifier:
             absolute number of test samples.
         """
         print("/*********//* Initializing training data *//**********/")
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.datasets_X, self.datasets_y, test_size=test_size
-        )
+        if self.flag:
+            self.X_train = self.y_train = self.datasets_X
+            self.X_test = self.y_test = self.datasets_y
+        else:
+            self.X_train, self.y_train, self.X_test, self.y_test = train_test_split(
+                self.datasets_X, self.datasets_y, test_size=test_size
+            )
 
     def SVM_model(self, find_params=False):
         """Set and train SVM model, and output the summary.
@@ -192,7 +212,8 @@ class EmotionClassifier:
         if find_params:
             self.model_find_best_params("SVM")
         self.model_train("SVM")
-        self.model_summary("SVM")
+        if not self.flag:
+            self.model_summary("SVM")
 
     def AdaBoost_model(self, find_params=False):
         """Set and train AdaBoost model, and output the summary.
@@ -204,7 +225,8 @@ class EmotionClassifier:
         if find_params:
             self.model_find_best_params("Ada")
         self.model_train("Ada")
-        self.model_summary("Ada")
+        if not self.flag:
+            self.model_summary("Ada")
 
     def MLP_model(self, find_params=False):
         """Set and train MLP model, and output the summary.
@@ -216,7 +238,8 @@ class EmotionClassifier:
         if find_params:
             self.model_find_best_params("MLP")
         self.model_train("MLP")
-        self.model_summary("MLP")
+        if not self.flag:
+            self.model_summary("MLP")
 
     def model_find_best_params(self, model):
         """Find the best parameters for an SVM model
@@ -279,7 +302,8 @@ class EmotionClassifier:
             If the optimal parameters of the model are not calculated,
             the default params are used.
         """
-        print("/*************//* Trainning " + model + " model *//*************/")
+        print("/*************//* Trainning " +
+              model + " model *//*************/")
         match model:
             case "SVM":
                 classifier = SVC(**self.SVM_params)
@@ -287,8 +311,15 @@ class EmotionClassifier:
                 classifier = AdaBoostClassifier(**self.AdaBoost_params)
             case "MLP":
                 classifier = MLPClassifier(**self.MLP_params)
-        classifier.fit(self.X_train, self.y_train)
-        self.y_pred = classifier.predict(self.X_test)
+        classifier.fit(self.X_train, self.X_test)
+        if self.flag:
+            data_test = self.read_openbci_data(self.usr_data_path)
+            self.y_pred = classifier.predict(data_test)
+            print("The Emotion predicted by your dataset is: " +
+                  emotion_lable_dict[self.y_pred[0]]
+                  )
+        else:
+            self.y_pred = classifier.predict(self.y_train)
 
     def model_summary(self, model):
         """Summary of the output model
@@ -302,13 +333,24 @@ class EmotionClassifier:
             classification_report(
                 self.y_test,
                 self.y_pred,
-                target_names=["negative", "neutral", "positive"],
+                target_names=emotion_lable_dict.values(),
             )
         )
 
+    def read_openbci_data(self, path):
+        data = np.loadtxt(path, delimiter="\t",
+                          usecols=(9, 10, 13, 14)).T
+        data = list(map(lambda x: x / 10000, data))
+        return [EmotionClassifier.process_data(data, fs, channels)]
+
+    def get_predicted_value(self):
+        return self.y_pred
+
 
 if __name__ == "__main__":
-    EC = EmotionClassifier()
+    EC = EmotionClassifier(
+        flag=True, usr_data_path="../TestData/BrainFlow-RAW.csv")
+    print()
     EC.Init_train_test_data()
 
     EC.SVM_model()
