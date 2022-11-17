@@ -8,14 +8,17 @@ Emotion Recognition](https://denisandgzh.github.io/EEG-Emotion-Recognition/)
 
 ## Setup And Run
 
-In order to run the code you need to request the [Seed Dataset](https://bcmi.sjtu.edu.cn/home/seed/seed.html), you need to apply for it, download the dataset and copy the SEED folder of the dataset to the root directory.  
+In order to run feature extraction you need to request the [Seed Dataset](https://bcmi.sjtu.edu.cn/home/seed/seed.html), you need to apply for it, download the dataset and copy the SEED folder of the dataset to the root directory.  
+Or you can also use the features already extracted in TrainData.  
+
+To run Model:  
 
 ```shell
 cd EmotionClassifierModel
 python Models.py
 ```
 
-To run Application
+To run Application:
 
 ```shell
 cd EmotionClassifierApplication
