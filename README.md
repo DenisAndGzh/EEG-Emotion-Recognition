@@ -46,7 +46,7 @@ For running Application, you may need to install extra package:
 1. For Window you need to check in the Python install the optional feature "tcl/tk and IDLE", while installing python.  
 2. For mac you need to install python-tk:
 
-   ```shell
+    ```shell
     brew install python-tk@(Your python version)
     ```  
 
