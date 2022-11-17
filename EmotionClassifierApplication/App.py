@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import sys
 import tkinter as tk
-from tkinter import filedialog, ttk, messagebox
+from tkinter import filedialog, messagebox, ttk
 
 from PIL import Image, ImageTk
 
@@ -32,7 +32,8 @@ def upload():
 
 def predict():
     if len(f.get()) == 0:
-        messagebox.showinfo(title="Warning", message="You haven't upload file!")
+        messagebox.showinfo(
+            title="Warning", message="You haven't upload file!")
         return
     EC = EmotionClassifierModel.Models.EmotionClassifier(True, f)
     EC.Init_train_test_data()
@@ -56,9 +57,11 @@ def predict():
 cbox = ttk.Combobox(window)
 cbox["value"] = ("SVM", "AdaBoost", "MLP")
 cbox.current(0)
+cbox["state"] = "readonly"
 cbox.grid(row=1, sticky="NW")
 
-tk.Label(window, textvariable=f, font=("微软雅黑", 13)).place(anchor="center", x=325, y=330)
+tk.Label(window, textvariable=f, font=("微软雅黑", 13)
+         ).place(anchor="center", x=325, y=330)
 tk.Button(window, text="Upload", width=10, height=2, command=upload).place(
     anchor="center", x=163, y=385
 )
