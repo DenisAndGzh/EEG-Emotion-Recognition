@@ -35,7 +35,7 @@ def predict():
         messagebox.showinfo(
             title="Warning", message="You haven't upload file!")
         return
-    EC = EmotionClassifierModel.Models.EmotionClassifier(True, f)
+    EC = EmotionClassifierModel.Models.EmotionClassifier(True, usr_data_path= f.get())
     EC.Init_train_test_data()
     match cbox.get():
         case "SVM":
