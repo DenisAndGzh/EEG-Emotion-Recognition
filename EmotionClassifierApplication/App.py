@@ -13,7 +13,7 @@ window.title("Emotion Recognition Application")
 window.geometry("650x450+400+300")
 window.resizable(0, 0)
 window.attributes("-alpha", 0.9)
-window.iconbitmap("imgs/Brain-icon.ico")
+window.wm_iconphoto(False, tk.PhotoImage(file = "imgs/Brain-icon.png"))
 
 f = tk.StringVar()
 
@@ -49,18 +49,17 @@ def predict():
     label_img = tk.Label(image=img)
     label_img.image = img
     label_img.place(anchor="center", x=325, y=135)
-    tk.Label(window, text=lable_dict[result], font=("微软雅黑", 25)).place(
-        anchor="center", x=325, y=280
+    tk.Label(window, text=lable_dict[result], font=("Segoe UI", 35)).place(
+        anchor="center", x=325, y=278
     )
 
 
-cbox = ttk.Combobox(window)
-cbox["value"] = ("SVM", "AdaBoost", "MLP")
+cbox = ttk.Combobox(
+    window, values=["SVM", "AdaBoost", "MLP"], state="readonly")
 cbox.current(0)
-cbox["state"] = "readonly"
 cbox.grid(row=1, sticky="NW")
 
-tk.Label(window, textvariable=f, font=("微软雅黑", 13)
+tk.Label(window, textvariable=f, font=("Segoe UI", 15)
          ).place(anchor="center", x=325, y=330)
 tk.Button(window, text="Upload", width=10, height=2, command=upload).place(
     anchor="center", x=163, y=385
