@@ -37,9 +37,18 @@ Datasets: Seed
 
 ## Library Required
 
-1.[NumPy](https://numpy.org/)  
-2.[SciPy](https://scipy.org/)  
-3.[scikit-learn](https://scikit-learn.org/stable/)
+1. [NumPy](https://numpy.org/)  
+2. [SciPy](https://scipy.org/)  
+3. [scikit-learn](https://scikit-learn.org/stable/)
+
+For running Application, you may need to install extra package:  
+
+1. For Window you need to check in the Python install the optional feature "tcl/tk and IDLE", while installing python.  
+2. For mac you need to install python-tk:
+
+   ```shell
+    brew install python-tk@(Your python version)
+    ```  
 
 ## Participants
 
