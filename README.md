@@ -58,3 +58,7 @@ Suvorov Denis Vitalievich / Суворов Денис Витальевич
 Guo ZiHan / Го Цзыхань  
 ![VK](https://img.shields.io/badge/VK-zjjhgzh-green)
 ![Email](https://img.shields.io/badge/mail-zjjhgzh%40gmail.com-blue)  
+
+## Notes
+
+If you find any mistakes or areas that can be improved, we are welcome to receive issue from you.
