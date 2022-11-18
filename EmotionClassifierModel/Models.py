@@ -2,6 +2,7 @@
 import math
 import os
 import pickle
+import time
 import warnings
 
 import numpy as np
@@ -302,6 +303,7 @@ class EmotionClassifier:
         """
         print("/*************//* Trainning " +
               model + " model *//*************/")
+        start = time.time()
         match model:
             case "SVM":
                 classifier = SVC(**self.SVM_params)
@@ -318,6 +320,8 @@ class EmotionClassifier:
                   )
         else:
             self.y_pred = classifier.predict(self.y_train)
+        end = time.time()
+        print("Training time: ", end-start, "s")
 
     def model_summary(self, model):
         """Summary of the output model
@@ -336,8 +340,8 @@ class EmotionClassifier:
         )
 
     def read_openbci_data(self, path):
-        data = np.loadtxt(path, delimiter="\t",
-                          usecols=(9, 10, 13, 14)).T
+        data = np.genfromtxt(path, delimiter="\t",
+                             usecols=(9, 10, 13, 14), skip_footer=1).T
         data = list(map(lambda x: x / 10000, data))
         return [EmotionClassifier.process_data(data, fs, channels)]
 
