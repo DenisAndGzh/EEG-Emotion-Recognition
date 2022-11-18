@@ -5,6 +5,7 @@ import pickle
 import time
 import warnings
 
+import matplotlib.pyplot as plot
 import numpy as np
 from scipy import signal
 from scipy.io import loadmat
@@ -17,11 +18,16 @@ from sklearn.svm import SVC
 warnings.filterwarnings("ignore")
 
 fs = 200
+""" 
 band_dict = {
     "delta": [1, 4],
     "theta": [4, 8],
     "alpha": [8, 14],
     "beta": [14, 31],
+    "gamma": [31, 50],
+} 
+"""
+band_dict = {
     "gamma": [31, 50],
 }
 
@@ -114,7 +120,7 @@ class EmotionClassifier:
         self.datasets_y = self.datasets_y
         self.__feature_data_io(feature_data_dir, "wb")
 
-    def process_data(data, fs, channels):
+    def process_data(self, data, fs, channels):
         dataset_X = []
         for band in band_dict.values():
             b, a = signal.butter(4, [band[0] / fs, band[1] / fs], "bandpass")
@@ -141,8 +147,9 @@ class EmotionClassifier:
             filtedData_de = np.array(filtedData_de)
             dataset_X.append(filtedData_de)
         dataset_X = np.array(dataset_X).reshape(
-            (len(channels) * 100 * 5)
+            (len(channels) * 100 * len(band_dict.keys()))
         )  # channels_num * 100 *5
+        # self.print_wave(dataset_X)
         return dataset_X
 
     def __feature_data_io(self, feature_data_dir, method):
@@ -343,14 +350,24 @@ class EmotionClassifier:
         data = np.genfromtxt(path, delimiter="\t",
                              usecols=(9, 10, 13, 14), skip_footer=1).T
         data = list(map(lambda x: x / 10000, data))
-        return [EmotionClassifier.process_data(data, fs, channels)]
+        return [self.process_data(data, fs, channels)]
 
     def get_predicted_value(self):
         return self.y_pred[0]
 
+    def print_wave(self, data):
+        plot.plot(range(len(channels)*100*len(band_dict.keys)), data)
+        plot.title('Wave')
+        plot.grid(True, which='both')
+        plot.axhline(y=0, color='k')
+        plot.show()
+
 
 if __name__ == "__main__":
-    EC = EmotionClassifier(True)
+    # EC = EmotionClassifier(True)
+    # Debug
+    EC = EmotionClassifier(True, data_dir="./SEED/Preprocessed_EEG/",
+                           feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_lou.csv")
     EC.Init_train_test_data()
 
     EC.SVM_model()

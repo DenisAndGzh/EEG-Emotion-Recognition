@@ -40,6 +40,7 @@ Datasets: Seed
 1. [NumPy](https://numpy.org/)  
 2. [SciPy](https://scipy.org/)  
 3. [scikit-learn](https://scikit-learn.org/stable/)
+4. [matplotlib](https://matplotlib.org/)
 
 For running Application, you may need to install extra package:  
 
