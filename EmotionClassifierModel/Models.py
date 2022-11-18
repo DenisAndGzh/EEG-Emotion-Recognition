@@ -13,7 +13,6 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.neural_network import MLPClassifier
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore")
@@ -155,7 +154,7 @@ class EmotionClassifier:
         dataset_X = np.array(dataset_X).reshape(
             (len(channels) * 100 * len(band_dict.keys()))
         )  # channels_num * 100 * band_num
-        self.print_wave(dataset_X)
+        # self.print_wave(dataset_X)
         return dataset_X
 
     def __feature_data_io(self, feature_data_dir, method):
@@ -359,7 +358,7 @@ class EmotionClassifier:
         processed_data = list(
             map(lambda x: -x, self.process_data(data, fs, channels)))
         return [processed_data]
-
+    
     def get_predicted_value(self):
         return self.y_pred[0]
 
@@ -372,9 +371,9 @@ class EmotionClassifier:
 
 
 if __name__ == "__main__":
-    #EC = EmotionClassifier(True)
+    EC = EmotionClassifier(True)
     # Debug
-    EC = EmotionClassifier(False, data_dir="./SEED/Preprocessed_EEG/",feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_guo.csv")
+    #EC = EmotionClassifier(False, data_dir="./SEED/Preprocessed_EEG/", feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_guo.csv")
     EC.Init_train_test_data()
 
     EC.SVM_model()
