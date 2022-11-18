@@ -356,7 +356,7 @@ class EmotionClassifier:
         return self.y_pred[0]
 
     def print_wave(self, data):
-        plot.plot(range(len(channels)*100*len(band_dict.keys)), data)
+        plot.plot(range(len(channels)*100*len(band_dict.keys())), data)
         plot.title('Wave')
         plot.grid(True, which='both')
         plot.axhline(y=0, color='k')
@@ -367,7 +367,7 @@ if __name__ == "__main__":
     # EC = EmotionClassifier(True)
     # Debug
     EC = EmotionClassifier(True, data_dir="./SEED/Preprocessed_EEG/",
-                           feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_lou.csv")
+                           feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_guo.csv")
     EC.Init_train_test_data()
 
     EC.SVM_model()
