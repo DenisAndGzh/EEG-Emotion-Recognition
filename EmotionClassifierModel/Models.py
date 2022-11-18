@@ -13,11 +13,13 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore")
 
 fs = 200
+# Choose bands
 """ 
 band_dict = {
     "delta": [1, 4],
@@ -28,6 +30,10 @@ band_dict = {
 } 
 """
 band_dict = {
+    "delta": [1, 4],
+    "theta": [4, 8],
+    "alpha": [8, 14],
+    "beta": [14, 31],
     "gamma": [31, 50],
 }
 
@@ -148,8 +154,8 @@ class EmotionClassifier:
             dataset_X.append(filtedData_de)
         dataset_X = np.array(dataset_X).reshape(
             (len(channels) * 100 * len(band_dict.keys()))
-        )  # channels_num * 100 *5
-        # self.print_wave(dataset_X)
+        )  # channels_num * 100 * band_num
+        self.print_wave(dataset_X)
         return dataset_X
 
     def __feature_data_io(self, feature_data_dir, method):
@@ -350,24 +356,25 @@ class EmotionClassifier:
         data = np.genfromtxt(path, delimiter="\t",
                              usecols=(9, 10, 13, 14), skip_footer=1).T
         data = list(map(lambda x: x / 10000, data))
-        return [self.process_data(data, fs, channels)]
+        processed_data = list(
+            map(lambda x: -x, self.process_data(data, fs, channels)))
+        return [processed_data]
 
     def get_predicted_value(self):
         return self.y_pred[0]
 
     def print_wave(self, data):
         plot.plot(range(len(channels)*100*len(band_dict.keys())), data)
-        plot.title('Wave')
+        plot.title('EEG')
         plot.grid(True, which='both')
         plot.axhline(y=0, color='k')
         plot.show()
 
 
 if __name__ == "__main__":
-    # EC = EmotionClassifier(True)
+    #EC = EmotionClassifier(True)
     # Debug
-    EC = EmotionClassifier(True, data_dir="./SEED/Preprocessed_EEG/",
-                           feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_guo.csv")
+    EC = EmotionClassifier(False, data_dir="./SEED/Preprocessed_EEG/",feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_guo.csv")
     EC.Init_train_test_data()
 
     EC.SVM_model()
