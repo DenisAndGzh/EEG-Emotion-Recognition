@@ -354,11 +354,10 @@ class EmotionClassifier:
     def read_openbci_data(self, path):
         data = np.genfromtxt(path, delimiter="\t",
                              usecols=(9, 10, 13, 14), skip_footer=1).T
+        
         data = list(map(lambda x: x / 10000, data))
-        processed_data = list(
-            map(lambda x: -x, self.process_data(data, fs, channels)))
-        return [processed_data]
-    
+        return [self.process_data(data, fs, channels)]
+
     def get_predicted_value(self):
         return self.y_pred[0]
 
@@ -371,9 +370,9 @@ class EmotionClassifier:
 
 
 if __name__ == "__main__":
-    EC = EmotionClassifier(True)
+    # EC = EmotionClassifier(True)
     # Debug
-    #EC = EmotionClassifier(False, data_dir="./SEED/Preprocessed_EEG/", feature_data_dir="./TrainingData/", usr_data_path="./TestData/BrainFlow-RAW_guo.csv")
+    EC = EmotionClassifier(True, data_dir="./SEED/Preprocessed_EEG/", feature_data_dir="./TrainingData/", usr_data_path="./TestData/test1.csv")
     EC.Init_train_test_data()
 
     EC.SVM_model()
