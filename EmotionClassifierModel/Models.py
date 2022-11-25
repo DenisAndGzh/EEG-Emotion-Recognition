@@ -371,7 +371,7 @@ class EmotionClassifier:
 if __name__ == "__main__":
     EC = EmotionClassifier(True)
     # Debug
-    # EC = EmotionClassifier(True, data_dir="./SEED/Preprocessed_EEG/", feature_data_dir="./TrainingData/", usr_data_path="./TestData/1.csv")
+    # EC = EmotionClassifier(True, data_dir="./SEED/Preprocessed_EEG/", feature_data_dir="./TrainingData/", usr_data_path="./TestData/positive.csv")
     EC.Init_train_test_data()
 
     EC.SVM_model()
