@@ -8,12 +8,14 @@ from PIL import Image, ImageTk
 sys.path.append("..")
 import EmotionClassifierModel.Models
 
+global word
+
 window = tk.Tk()
 window.title("Emotion Recognition Application")
 window.geometry("650x450+400+300")
 window.resizable(0, 0)
 window.attributes("-alpha", 0.9)
-window.wm_iconphoto(False, tk.PhotoImage(file = "imgs/Brain-icon.png"))
+window.wm_iconphoto(False, tk.PhotoImage(file="imgs/Brain-icon.png"))
 
 f = tk.StringVar()
 
@@ -35,7 +37,8 @@ def predict():
         messagebox.showinfo(
             title="Warning", message="You haven't upload file!")
         return
-    EC = EmotionClassifierModel.Models.EmotionClassifier(True, usr_data_path= f.get())
+    EC = EmotionClassifierModel.Models.EmotionClassifier(
+        True, usr_data_path=f.get())
     EC.Init_train_test_data()
     match cbox.get():
         case "SVM":
@@ -49,7 +52,12 @@ def predict():
     label_img = tk.Label(image=img)
     label_img.image = img
     label_img.place(anchor="center", x=325, y=135)
-    tk.Label(window, text=lable_dict[result], font=("Segoe UI", 35)).place(
+    try:
+        word.destroy()
+    except:
+        print("Word is not defined")
+    word = tk.Label(window, text=lable_dict[result], font=("Segoe UI", 35))
+    word.place(
         anchor="center", x=325, y=278
     )
 
