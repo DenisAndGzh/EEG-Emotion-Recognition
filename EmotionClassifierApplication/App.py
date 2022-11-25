@@ -8,8 +8,6 @@ from PIL import Image, ImageTk
 sys.path.append("..")
 import EmotionClassifierModel.Models
 
-global word
-
 window = tk.Tk()
 window.title("Emotion Recognition Application")
 window.geometry("650x450+400+300")
@@ -18,6 +16,11 @@ window.attributes("-alpha", 0.9)
 window.wm_iconphoto(False, tk.PhotoImage(file="imgs/Brain-icon.png"))
 
 f = tk.StringVar()
+
+word = tk.Label(window, text='', font=("Segoe UI", 35))
+word.place(
+    anchor="center", x=325, y=278
+)
 
 img_dict = {-1: "imgs/-1.png", 0: "imgs/0.png", 1: "imgs/1.png"}
 lable_dict = {-1: "negative", 0: "neutral", 1: "positive"}
@@ -52,14 +55,7 @@ def predict():
     label_img = tk.Label(image=img)
     label_img.image = img
     label_img.place(anchor="center", x=325, y=135)
-    try:
-        word.destroy()
-    except:
-        print("Word is not defined")
-    word = tk.Label(window, text=lable_dict[result], font=("Segoe UI", 35))
-    word.place(
-        anchor="center", x=325, y=278
-    )
+    word['text'] = lable_dict[result]
 
 
 cbox = ttk.Combobox(
